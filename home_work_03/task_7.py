@@ -1,8 +1,11 @@
 number = int(input("Enter a number: "))
 
-for i in range(3, number, 2):
-    if number % i == 0:
-        print(False)
-        break
+if number == 1 or number % 2 == 0:
+    print(False)
 else:
-    print(True)
+    for i in range(3, number, 2):
+        if number % i == 0:
+            print(False)
+            break
+    else:
+        print(True)
