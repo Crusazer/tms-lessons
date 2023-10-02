@@ -1,10 +1,7 @@
 def get_most_frequent_word(text: str) -> str:
     counter_words = {}
     for i in text.split():
-        if i in counter_words:
-            counter_words[i] += 1
-        else:
-            counter_words[i] = 0
+        counter_words[i] = counter_words.get(i, 0) + 1
 
     return max(counter_words, key=counter_words.get)
 
