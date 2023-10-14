@@ -24,7 +24,7 @@ def check_diagonals(matrix: list, number: int) -> bool:
         return False
 
     # Secondary diagonal
-    if number != sum([matrix[i][i] for i in range(-length, 0)]):
+    if number != sum([matrix[i][-1 - i] for i in range(length)]):
         return False
 
     return True
