@@ -1,4 +1,4 @@
-from functools import reduce
+import json
 from random import randint
 
 
@@ -8,16 +8,41 @@ def get_random_digits(count: int):
 
 
 class BankAccount:
-    def __init__(self, card_holder):
+    def __init__(self, card_holder, money=0.0, card_number=None, account_number=None):
         self.card_holder = card_holder
-        self.money = 0.0
-        self.account_number = get_random_digits(20)
-        self.curd_number = get_random_digits(10)
+        self.money = money
+        self.card_number = card_number if card_number else get_random_digits(10)
+        self.account_number = account_number if account_number else get_random_digits(20)
+
+
+def convert_bank_account_to_dict(account: BankAccount) -> dict:
+    """ convert BankAccount to dict """
+    return {
+        "card_holder": account.card_holder,
+        "money": account.money,
+        "card_number": account.card_number,
+        "account_number": account.account_number
+    }
+
+
+def save_accounts(accounts: list[BankAccount], file_name: str):
+    """ Save accounts to json file """
+    with open(file_name, 'w') as file:
+        json.dump([convert_bank_account_to_dict(acc) for acc in accounts], file, indent=2)
+
+
+def load_accounts(file_name: str) -> list[BankAccount]:
+    try:
+        with open(file_name, 'r') as file:
+            accounts = json.load(file)
+            return [BankAccount(**account) for account in accounts]
+    except FileNotFoundError:
+        return []
 
 
 class Bank:
-    def __init__(self):
-        self.__bank_accounts: list[BankAccount] = []
+    def __init__(self, bank_accounts: list[BankAccount] = None):
+        self.__bank_accounts: list[BankAccount] = bank_accounts if bank_accounts else []
 
     def open_account(self, card_holder: str) -> BankAccount:
         """ Create a new account """
@@ -58,8 +83,9 @@ class Bank:
 
 
 class Controller:
-    def __init__(self):
-        self.bank = Bank()
+    def __init__(self, data_file_name: str):
+        self.data_file_name = data_file_name
+        self.bank = Bank(load_accounts(data_file_name))
 
     def run(self):
         print("Здравствуйте, наш банк открылся!")
@@ -76,6 +102,7 @@ class Controller:
 
             match choice:
                 case 0:
+                    save_accounts(self.bank.get_all_bank_accounts(), self.data_file_name)
                     print("До свидания")
                     return
                 case 1:
@@ -87,7 +114,7 @@ class Controller:
                     for acc in accounts:
                         print(f"Счёт: {acc.account_number}\n"
                               f"   Остаток на счету: {acc.money}\n"
-                              f"   Номер карты: {acc.curd_number}\n"
+                              f"   Номер карты: {acc.card_number}\n"
                               f"   Держатель карты: {acc.card_holder}")
                 case 3:
                     number = input("Введите номер счёта: ")
@@ -106,5 +133,5 @@ class Controller:
 
 
 if __name__ == '__main__':
-    controller = Controller()
+    controller = Controller("data.json")
     controller.run()
