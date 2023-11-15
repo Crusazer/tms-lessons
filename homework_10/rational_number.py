@@ -7,7 +7,7 @@ class Rational:
 
     def __init__(self, numerator: int, denominator: int):
         assert isinstance(numerator, int) and isinstance(denominator, int), "Arguments must be int"
-        assert not denominator == 0, "Denominator cannot be a zero"
+        assert denominator != 0, "Denominator cannot be a zero"
         self.__numerator = numerator
         self.__denominator = denominator
         self.__normalise()

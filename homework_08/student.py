@@ -1,14 +1,14 @@
 class Student:
-    def __init__(self, full_name: str, agerage_mark: float):
+    def __init__(self, full_name: str, average_mark: float):
         self.full_name = full_name
-        self.agerage_mark = agerage_mark
+        self.average_mark = average_mark
 
     def get_scholarship(self):
-        if self.agerage_mark < 6:
+        if self.average_mark < 6:
             return 60
-        if self.agerage_mark < 8:
+        if self.average_mark < 8:
             return 80
         return 100
 
     def is_excellent(self):
-        return self.agerage_mark >= 9
+        return self.average_mark >= 9
