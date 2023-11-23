@@ -15,37 +15,28 @@ class BankAccount:
         self.account_number = account_number if account_number else str(get_random_digits(20))
 
 
-def convert_bank_account_to_dict(account: BankAccount) -> dict:
-    """ convert BankAccount to dict """
-    return {
-        "card_holder": account.card_holder,
-        "money": account.money,
-        "card_number": account.card_number,
-        "account_number": account.account_number
-    }
-
-
 def save_accounts(accounts: list[BankAccount], file_name: str):
     """ Save accounts to database"""
     with sqlite3.connect(file_name) as connection:
         """ Create table if note exist"""
         connection.execute("""CREATE TABLE IF NOT EXISTS accounts(
-        id INTEGER PRIMARY KEY AUTOINCREMENT,
         card_holder VARCHAR(100),
         money FLOAT,
         card_number INTEGER,
-        account_number VARCHAR(20));""")
+        account_number VARCHAR(20) PRIMARY KEY);""")
+
+        execute_string_for_update = f"""UPDATE accounts SET card_holder=?, money=?, card_number=?, account_number=? 
+                            WHERE account_number=?"""
+        execute_string_for_insert = """INSERT OR IGNORE INTO accounts (card_holder, money, card_number, account_number)
+            VALUES (?, ?, ?, ?)"""
+
         for account in accounts:
-            """ Before insert account check if exist it into database"""
-            cursor = connection.execute(r"SELECT * FROM accounts WHERE account_number = ?", (account.account_number,))
-            if cursor.fetchone():
-                connection.execute(
-                    """UPDATE accounts SET card_holder = ?, money = ?, card_number = ? WHERE account_number = ?""",
-                    (account.card_holder, account.money, account.card_number, account.account_number))
-            else:
-                connection.execute(
-                    """INSERT INTO accounts(card_holder, money, card_number, account_number) VALUES(?, ?, ?, ?)""",
-                    (account.card_holder, account.money, account.card_number, account.account_number))
+            cursor = connection.execute(execute_string_for_update, (
+                account.card_holder, account.money, account.card_number, account.account_number,
+                account.account_number))
+
+            cursor = connection.execute(execute_string_for_insert, (
+                account.card_holder, account.money, account.card_number, account.account_number))
 
         # Save changes
         connection.commit()
@@ -56,10 +47,8 @@ def load_accounts(file_name: str) -> dict[str, BankAccount]:
         with sqlite3.connect(file_name) as connection:
             cursor = connection.execute("""SELECT * FROM accounts""")
             accounts = cursor.fetchall()
-            if accounts:
-                return {account[4]: BankAccount(*account[1:]) for account in accounts}
-            else:
-                return {}
+            return {account[3]: BankAccount(*account) for account in accounts} if accounts else {}
+
     except sqlite3.OperationalError:
         return {}
 
