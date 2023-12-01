@@ -2,7 +2,7 @@ import random
 import copy
 
 
-def bubble(array: list) -> list:
+def bubble_sort(array: list) -> list:
     if not array:
         return []
 
@@ -39,32 +39,51 @@ def marge_sort(array: list) -> list:
         left = lst2[:mid]
         right = lst2[mid:]
 
-        a = marge_sort(left)
-        b = marge_sort(right)
-        lst = []
+        left_piece = marge_sort(left)
+        right_piece = marge_sort(right)
+
+        marge_list = []
         i = 0
         j = 0
-        k = 0
 
-        while i < len(a) and j < len(b):
-            if a[i] < b[j]:
-                lst[k] = a[i]
+        while i < len(left_piece) and j < len(right_piece):
+            if left_piece[i] < right_piece[j]:
+                marge_list.append(left_piece[i])
                 i += 1
             else:
-                lst[k] = b[j]
+                marge_list.append(right_piece[j])
                 j += 1
-            k += 1
 
-        while i < len(a):
-            lst[k] = a[i]
+        while i < len(left_piece):
+            marge_list.append(left_piece[i])
             i += 1
-            k += 1
 
-        while j < len(b):
-            lst[k] = b[j]
+        while j < len(right_piece):
+            marge_list.append(right_piece[j])
             j += 1
-            k += 1
-    return lst
+        return marge_list
+    return lst2
+
+
+def quick_sort(lst: list) -> list:
+    array = lst.copy()
+
+    if len(array) < 2:
+        return array
+    else:
+        pivot = array[random.randint(1, len(array)) - 1]
+        less = []
+        greater = []
+        equal = []
+
+        for i in array:
+            if i < pivot:
+                less.append(i)
+            elif i == pivot:
+                equal.append(i)
+            else:
+                greater.append(i)
+        return quick_sort(less) + equal + quick_sort(greater)
 
 
 def generate_list(n: int):
@@ -89,9 +108,8 @@ def test_sort(sort_func: callable):
     test_case(sort_func, 10)
     test_case(sort_func, 100)
     test_case(sort_func, 1000)
-    test_case(sort_func, 10000)
+    test_case(sort_func, 100000)
 
 
 if __name__ == '__main__':
-    #test_sort(mergeSort)
-    print(marge_sort([5, 3, 2, 4, 1]))
+    test_sort(insert_sort)
