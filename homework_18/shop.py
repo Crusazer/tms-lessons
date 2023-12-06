@@ -34,12 +34,13 @@ def all_products():
 
 
 @app.route("/product/<int:product_id>")
-def send_page_product(product_id: int):
+def product_page(product_id: int):
     if session.get("is_authenticated"):
         session['current_page'] = f"/product/{product_id}"
 
     product = db.load_product(product_id)
-    return utilits.get_product_string(product)
+    page = utilits.get_upper_string()
+    return page + utilits.get_product_string(product)
 
 
 @app.route("/category/<int:category_id>")

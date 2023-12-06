@@ -36,7 +36,9 @@ def get_product_string(product: Product) -> str:
         sign = '&#10027;'
         text_button = "Удалить из избранного"
 
-    return f'''<b><ul>{product.name} {sign}</ul></b>
+    return f'''<b><ul>
+                    <a href="http://127.0.0.1:8080/product/{product.id}">{product.name} {sign}</a>
+                </ul></b>
                Описание: {product.description}
                <form action="/add_favorite/{product.id}" method="post">        
                     <input type="submit" value="{text_button}"><br>
