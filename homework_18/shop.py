@@ -20,7 +20,7 @@ def main_page():
 
     page = utilits.get_upper_string()
     page += f'<h3><a href="http://127.0.0.1:8080/products">Все товары</a></h3>'
-    return page + utilits.get_main_page_string() + "</hr>"
+    return page + utilits.get_main_page_string(db.load_product_order_by_categories()) + "</hr>"
 
 
 @app.route("/products")

@@ -1,12 +1,10 @@
 """ This file contains functions for create html strings. And some other functions. """
 from flask import session
 
-from homework_18 import db
 from homework_18.db import Product
 
 
-def get_main_page_string() -> str:
-    data = db.load_product_order_by_categories()
+def get_main_page_string(data: list) -> str:
     string = '<ul>'
     category = ''
     fist_step_flag = True
@@ -32,7 +30,7 @@ def get_main_page_string() -> str:
 def get_product_string(product: Product) -> str:
     sign = ''
     text_button = "Добавить в избранное"
-    if product.id in session['favorite_products_id']:
+    if session.get('is_authenticated') and product.id in session.get('favorite_products_id'):
         sign = '&#10027;'
         text_button = "Удалить из избранного"
 
@@ -77,7 +75,7 @@ def get_registration_string(additional_data: str = '', username: str = '', passw
 
 
 def get_upper_string():
-    if session["is_authenticated"]:
+    if session.get("is_authenticated"):
         string = f'''{session.get("username")}<br>
                     <a href="http://127.0.0.1:8080/favorites">Любимые товары</a> &emsp;
                     <a href="http://127.0.0.1:8080/">Вернуться на главную страницу</a>
