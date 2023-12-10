@@ -1,8 +1,8 @@
 """ This file contains main code for work with Flask. """
 from flask import Flask, redirect, session, request
 from flask_session import Session
-from homework_18 import utilits
 from homework_18 import db
+from jinja2 import Environment, FileSystemLoader
 
 # CONSTS
 DATABASE_PATH = 'shop.db'
@@ -12,47 +12,70 @@ app.config["SESSION_PERMANENT"] = False
 app.config["SESSION_TYPE"] = "filesystem"
 Session(app)
 
+# Initialize jinja
+file_loader = FileSystemLoader("templates")
+env = Environment(loader=file_loader)
+
+# Jinja pages
+main_page = env.get_template("main.html")
+authorization_page = env.get_template("authorization.html")
+registration_page = env.get_template("registration.html")
+product_page = env.get_template("product.html")
+products_page = env.get_template("products.html")
+favorite_products = env.get_template("favorite_products.html")
+category_page = env.get_template("category.html")
+
 
 @app.route('/')
-def main_page():
+def send_main_page():
     if session.get("is_authenticated"):
         session['current_page'] = '/'
 
-    page = utilits.get_upper_string()
-    page += f'<h3><a href="http://127.0.0.1:8080/products">Все товары</a></h3>'
-    return page + utilits.get_main_page_string(db.load_product_order_by_categories()) + "</hr>"
+    return main_page.render(products=db.load_product_order_by_categories(), title="Главная страница",
+                            is_auth=session.get("is_authenticated", False), username=session.get("username", ""))
 
 
 @app.route("/products")
-def all_products():
+def send_all_products_page():
+    favorite_products_id = []
     if session.get("is_authenticated"):
         session['current_page'] = '/products'
+        favorite_products_id = session.get('favorite_products_id')
 
-    page = utilits.get_upper_string()
-    page += '\n'.join([utilits.get_product_string(product) for product in db.load_products()])
-    return page
+    return products_page.render(products=db.load_products(), title="Все продукты",
+                                is_auth=session.get("is_authenticated", False), username=session.get("username", ""),
+                                favorites=favorite_products_id)
 
 
 @app.route("/product/<int:product_id>")
-def product_page(product_id: int):
+def send_product_page(product_id: int):
     if session.get("is_authenticated"):
         session['current_page'] = f"/product/{product_id}"
 
     product = db.load_product(product_id)
-    page = utilits.get_upper_string()
-    return page + utilits.get_product_string(product)
+    sign = ''
+    text_button = "Добавить в избранное"
+    if session.get('is_authenticated') and product.id in session.get('favorite_products_id'):
+        sign = '&#10027;'
+        text_button = "Удалить из избранного"
+
+    return product_page.render(product=product, text_button=text_button, sign=sign, title=product.name,
+                               is_auth=session.get("is_authenticated", False), username=session.get("username", ""))
 
 
 @app.route("/category/<int:category_id>")
 def products_from_category(category_id: int):
+    favorite_products_id = []
+
     if session.get("is_authenticated"):
         session['current_page'] = f"/category/{category_id}"
+        favorite_products_id = session.get('favorite_products_id')
 
-    page = utilits.get_upper_string()
     products = db.load_products_from_category(category_id)
-    for product in products:
-        page += utilits.get_product_string(product)
-    return page
+
+    return category_page.render(products=products, favorites=favorite_products_id,
+                                title=db.load_category_name(products[0].category_id),
+                                is_auth=session.get("is_authenticated", False), username=session.get("username", ""))
 
 
 @app.route("/favorites")
@@ -61,12 +84,14 @@ def favorites():
         redirect('/auth')
 
     session['current_page'] = f"/favorites"
-    page = utilits.get_upper_string()
-    for product_id in session.get("favorite_products_id"):
-        product = db.load_product(product_id)
-        page += utilits.get_product_string(product)
+    products = []
 
-    return page
+    for product_id in session.get("favorite_products_id"):
+        products.append(db.load_product(product_id))
+
+    return favorite_products.render(products=products, title="Любимые товары",
+                                    is_auth=session.get("is_authenticated", False),
+                                    username=session.get("username", ""))
 
 
 '''---------REGISTRATION AND AUTHENTICATION----------------------------------'''
@@ -74,12 +99,12 @@ def favorites():
 
 @app.route("/auth")
 def authentication():
-    return utilits.get_authentication_string()
+    return authorization_page.render(additional_data="")
 
 
 @app.route("/registration")
 def registration():
-    return utilits.get_registration_string()
+    return registration_page.render(additional_data="")
 
 
 @app.route("/auth", methods=["POST"])
@@ -89,7 +114,7 @@ def authentication_user():
 
     # user is already sign in
     if session.get("is_authenticated"):
-        return utilits.get_authentication_string("Вы уже вошли в аккаунт.")
+        return authorization_page.render(additional_data="Вы уже вошли в аккаунт.")
 
     # user entered correct data
     user = db.load_user(username)
@@ -102,7 +127,8 @@ def authentication_user():
         return redirect("/")
 
     # user entered incorrect data
-    return utilits.get_authentication_string("Вы ввели некорректный логин или пароль.", username, password)
+    return authorization_page.render(additional_data="Вы ввели некорректный логин или пароль.", username=username,
+                                     password=password)
 
 
 @app.route("/registration", methods=["POST"])
@@ -112,11 +138,13 @@ def registration_user():
 
     # user is already sign in
     if session.get("is_authenticated"):
-        return utilits.get_registration_string("Для регистрации нового аккаунта нужно выйти из текущего.")
+        return registration_page.render(additional_data="Для регистрации нового аккаунта нужно выйти из текущего.",
+                                        username=username, password=password)
 
     # user already exists
     if db.load_user(username):
-        return utilits.get_registration_string("Пользователь с данным именем уже существует.")
+        return registration_page.render(additional_data="Пользователь с данным именем уже существует.",
+                                        username=username, password=password)
 
     # user entered correct data
     db.create_user(username, password)
@@ -127,7 +155,7 @@ def registration_user():
     session['favorite_products_id'] = []
     session['current_page'] = '/registration'
     session["is_authenticated"] = True
-    return utilits.get_registration_string("Поздравляем! регистрация пользователя прошла успешно.")
+    return registration_page.render(additional_data="Поздравляем! регистрация пользователя прошла успешно.")
 
 
 @app.route("/logout", methods=["POST"])

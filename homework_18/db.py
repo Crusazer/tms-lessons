@@ -103,3 +103,11 @@ def delete_favorite_product(user_id: int, product_id: int):
 
     with sqlite3.connect(DATABASE_PATH) as connection:
         connection.execute("DELETE FROM user_to_product WHERE user_id = ? AND product_id = ?", (user_id, product_id))
+
+
+def load_category_name(category_id: int):
+    assert category_id is not int, "Incorrect value in func::load_category_name"
+
+    with sqlite3.connect(DATABASE_PATH) as connection:
+        execute = connection.execute("SELECT name FROM category WHERE id = ?", (category_id,))
+    return execute.fetchone()[0]

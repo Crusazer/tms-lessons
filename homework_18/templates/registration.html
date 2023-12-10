@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>Регистрация</title>
+</head>
+<body>
+<h1 style="text-align: center;">Регистрация пользователя</h1>
+<form action="/registration" method="post">
+    {{additional_data}}<br>
+    Логин:    <input type="text" name="username" value="{{username}}"/><br>
+    Пароль: <input type="password" name="password" value="{{password}}"/><br>
+    <input type="submit" value="Зарегистрироваться"><br>
+    <a href="http://127.0.0.1:8080/auth">Вход в аккаунт</a><br>
+    <a href="http://127.0.0.1:8080/">На главную страницу</a>
+</form>
+</body>
+</html>

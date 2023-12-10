@@ -1,0 +1,7 @@
+{% include 'header.html' -%}
+<ul>
+    {% for product in products -%}
+    <li><a href="http://127.0.0.1:8080/product/{{product.id}}">{{product.name}}</a></li>
+    {% endfor -%}
+</ul>
+{% include 'footer.html' -%}

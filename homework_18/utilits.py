@@ -1,6 +1,5 @@
 """ This file contains functions for create html strings. And some other functions. """
 from flask import session
-
 from homework_18.db import Product
 
 
@@ -18,11 +17,10 @@ def get_main_page_string(data: list) -> str:
             else:
                 string += f'</ul></li>'
             # 3 is category_id
-            string += f'''<br><li><a href="http://127.0.0.1:8080/category/{product[3]}">{category}<a><ul>'''
-            string += f"<li>{product[1]}</li>"  # 1 is product.name in tuple
+            string += f'''\n<br><li><a href="http://127.0.0.1:8080/category/{product[3]}">{category}<a><ul>'''
+            string += f"\n<li>{product[1]}</li>"  # 1 is product.name in tuple
         else:
-            string += f"<li>{product[1]}</li>"
-
+            string += f"\n<li>{product[1]}</li>"
     string += '</ul>'
     return string
 

@@ -1,0 +1,11 @@
+{% include 'header.html' -%}
+<b>
+    <ul>
+        {{product.name}} {{sign}}
+    </ul>
+</b>
+Описание: {{product.description}}
+<form action="/add_favorite/{{product.id}}" method="post">
+    <input type="submit" value="{{text_button}}"><br>
+</form>
+{% include 'footer.html' -%}
