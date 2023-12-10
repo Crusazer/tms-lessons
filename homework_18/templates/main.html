@@ -1,13 +1,13 @@
 {% include 'header.html' -%}
 <h4>
-    <a href="http://127.0.0.1:8080/products">Все продукты</a>
+    <a href="http://127.0.0.1:8080/products" style="text-decoration:none;">Все продукты</a>
 </h4>
 <ul><ul>
 {% set ns = namespace(category='') -%}
 {% for product in products -%}
 {% if product[4] != ns.category -%}
 {% set ns.category = product[4] -%}
-</ul></ul><ul><li><a href="http://127.0.0.1:8080/category/{{product[3]}}">{{ns.category}}</li></a><ul>
+</ul></ul><ul><li><a href="http://127.0.0.1:8080/category/{{product[3]}}" style="text-decoration:none;">{{ns.category}}</li></a><ul>
 <li>{{product[1]}}</li>
 {% else -%}
 <li>{{product[1]}}</li>

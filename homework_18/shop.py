@@ -28,28 +28,35 @@ category_page = env.get_template("category.html")
 
 @app.route('/')
 def send_main_page():
+    last_page = '/'
     if session.get("is_authenticated"):
+        last_page = session['current_page']
         session['current_page'] = '/'
 
     return main_page.render(products=db.load_product_order_by_categories(), title="Главная страница",
-                            is_auth=session.get("is_authenticated", False), username=session.get("username", ""))
+                            is_auth=session.get("is_authenticated", False), username=session.get("username", ""),
+                            last_page=last_page)
 
 
 @app.route("/products")
 def send_all_products_page():
     favorite_products_id = []
+    last_page = '/'
     if session.get("is_authenticated"):
+        last_page = session['current_page']
         session['current_page'] = '/products'
         favorite_products_id = session.get('favorite_products_id')
 
     return products_page.render(products=db.load_products(), title="Все продукты",
                                 is_auth=session.get("is_authenticated", False), username=session.get("username", ""),
-                                favorites=favorite_products_id)
+                                favorites=favorite_products_id, last_page=last_page)
 
 
 @app.route("/product/<int:product_id>")
 def send_product_page(product_id: int):
+    last_page = '/'
     if session.get("is_authenticated"):
+        last_page = session['current_page']
         session['current_page'] = f"/product/{product_id}"
 
     product = db.load_product(product_id)
@@ -60,14 +67,17 @@ def send_product_page(product_id: int):
         text_button = "Удалить из избранного"
 
     return product_page.render(product=product, text_button=text_button, sign=sign, title=product.name,
-                               is_auth=session.get("is_authenticated", False), username=session.get("username", ""))
+                               is_auth=session.get("is_authenticated", False), username=session.get("username", ""),
+                               last_page=last_page)
 
 
 @app.route("/category/<int:category_id>")
 def products_from_category(category_id: int):
     favorite_products_id = []
+    last_page = '/'
 
     if session.get("is_authenticated"):
+        last_page = session['current_page']
         session['current_page'] = f"/category/{category_id}"
         favorite_products_id = session.get('favorite_products_id')
 
@@ -75,7 +85,8 @@ def products_from_category(category_id: int):
 
     return category_page.render(products=products, favorites=favorite_products_id,
                                 title=db.load_category_name(products[0].category_id),
-                                is_auth=session.get("is_authenticated", False), username=session.get("username", ""))
+                                is_auth=session.get("is_authenticated", False), username=session.get("username", ""),
+                                last_page=last_page)
 
 
 @app.route("/favorites")
@@ -83,6 +94,7 @@ def favorites():
     if not session.get("is_authenticated"):
         redirect('/auth')
 
+    last_page = '/'
     session['current_page'] = f"/favorites"
     products = []
 
@@ -91,7 +103,7 @@ def favorites():
 
     return favorite_products.render(products=products, title="Любимые товары",
                                     is_auth=session.get("is_authenticated", False),
-                                    username=session.get("username", ""))
+                                    username=session.get("username", ""), last_page=last_page)
 
 
 '''---------REGISTRATION AND AUTHENTICATION----------------------------------'''

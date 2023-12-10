@@ -6,14 +6,21 @@
 </head>
 <body>
 {% if is_auth -%}
-{{username}}<br>
-<a href="http://127.0.0.1:8080/favorites">Любимые товары</a> &emsp;
-<a href="http://127.0.0.1:8080/">Вернуться на главную страницу</a>
-<form action="/logout" method="post">
-    <input type="submit" value="Выйти из аккаунта"><br>
-</form>
+
+<div>
+    <div style="width: 300px; color:blue; float:left;">{{username}}</div>
+    <div style="width: 300px; color:red; float:right;">
+        <form action="/logout" style="text-align: right;" method="post">
+            <input type="submit" value="Выйти из аккаунта"><br>
+        </form>
+    </div>
+</div><br>
+<a href="http://127.0.0.1:8080/{{last_page}}" style="text-decoration:none;">Назад</a> &emsp;
+<a href="http://127.0.0.1:8080/" style="text-decoration:none;">Вернуться на главную страницу &emsp;</a>
+<a href="http://127.0.0.1:8080/favorites" style="text-decoration:none;">Любимые товары</a> &emsp;
+
 <hr>
 {% else -%}
-<a href="http://127.0.0.1:8080/auth">Войти в аккаунт</a> &emsp;
-<a href="http://127.0.0.1:8080/">Вернуться на главную страницу</a><hr>
+<a href="http://127.0.0.1:8080/auth" style="text-decoration:none;">Войти в аккаунт</a> &emsp;
+<a href="http://127.0.0.1:8080/" style="text-decoration:none;">Вернуться на главную страницу</a><hr>
 {% endif -%}

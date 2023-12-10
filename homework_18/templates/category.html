@@ -3,7 +3,7 @@
     {{title}}
 </h4>
 {% for product in products -%}
-<li><a href="http://127.0.0.1:8080/product/{{product.id}}">{{product.name}}
+<li><a href="http://127.0.0.1:8080/product/{{product.id}}" style="text-decoration:none;">{{product.name}}
 {%  if product.id in favorites -%}&#10027;{% endif -%}
 </a></li>
 {% endfor -%}
