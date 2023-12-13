@@ -136,6 +136,7 @@ def authentication_user():
         session["user_id"] = user.user_id
         session["favorite_products_id"] = db.load_favorites_user_products_id(user.user_id)
         session["is_authenticated"] = True
+        session['current_page'] = f"/auth"
         return redirect("/")
 
     # user entered incorrect data
