@@ -1,0 +1,42 @@
+[
+    {
+        "name": "Electronics",
+        "products": [
+            {
+                "name": "Smartphone",
+                "description": "A high-end smartphone with advanced features",
+                "price": 800
+            },
+            {
+                "name": "Laptop",
+                "description": "Powerful laptop for work and gaming",
+                "price": 1200
+            },
+            {
+                "name": "Headphones",
+                "description": "Wireless noise-cancelling headphones",
+                "price": 200
+            }
+        ]
+    },
+    {
+        "name": "Clothing",
+        "products": [
+            {
+                "name": "T-shirt",
+                "description": "Cotton t-shirt for everyday wear",
+                "price": 20
+            },
+            {
+                "name": "Jeans",
+                "description": "Slim-fit jeans for a trendy look",
+                "price": 50
+            },
+            {
+                "name": "Sneakers",
+                "description": "Stylish sneakers for casual outings",
+                "price": 80
+            }
+        ]
+    }
+]
