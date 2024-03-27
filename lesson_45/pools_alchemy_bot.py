@@ -23,7 +23,6 @@ session = models.create_database_session()
 
 
 class ChoiceData(CallbackData, prefix="choice"):
-    # choice: Choice
     id: int
 
 
